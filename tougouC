@@ -1,0 +1,57 @@
+#define echoPin 3
+#define trigPin 2
+const int VOLUME_PIN = 28;
+double Duration = 0;   //受信した感覚
+double Distance = 0;   //距離
+void setup() {
+  Serial.begin(115200);
+  //フォト
+  analogReadResolution(12);
+  pinMode(VOLUME_PIN, INPUT);
+  //センサ
+   pinMode( echoPin, INPUT);
+  pinMode( trigPin, OUTPUT);
+  //ブザー
+   pinMode(15,OUTPUT);
+   //LED
+   pinMode(21,OUTPUT);
+}
+void loop() {
+  //フォトレジスタ
+  int volt = analogRead(VOLUME_PIN);
+  volt = volt*3.3/4096;
+  Serial.println(volt); //電圧を貼る
+  delay(10);
+  //センサ
+  digitalWrite(trigPin , LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin , HIGH);
+  delayMicroseconds( 10 );
+  digitalWrite ( trigPin , LOW);
+  Duration = pulseIn( echoPin, HIGH);
+   if (Duration > 0) {
+    Duration = Duration/2;
+    Distance = Duration*340*100/1000000;
+    Serial.print("Distance:");
+    Serial.print(Distance);
+    Serial.println(" cm");
+      
+  if ( volt >= 3 && Distance <= 200) {
+    //LED
+  digitalWrite(21,HIGH);
+  Serial.println("ON");
+  delay(3000);
+  }
+  else if ( volt < 3 && Distance <= 200) {
+  //ブザー 
+  digitalWrite(15,HIGH);
+  Serial.println("ON");
+  delay(3000);
+  }
+  else {
+    digitalWrite(15,LOW);
+    digitalWrite(21,LOW);
+    delay(10);
+  }
+}
+}
